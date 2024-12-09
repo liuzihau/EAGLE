@@ -1,8 +1,8 @@
 {
     "basepath": "/content/drive/MyDrive/LLMs_weight/llama/checkpoints/Llama-2-7b-hf",
-    "datapath": "/content",
-    "config_path": "config.json",
-    "cpdir": "./",
+    "datapath": "/content/content/drive/MyDrive/EAGLE_data/sharegpt_0_67999_mufp16/0",
+    "config_path": "/content/EAGLE/eagle/train/llama_2_chat_7B_config.json",
+    "cpdir": "/content/drive/MyDrive",
     "lr": 3e-05,
     "bs": 4,
     "gradient_accumulation_steps": 1,
@@ -25,5 +25,6 @@
     "b1": 0.9,
     "b2": 0.95,
     "grad_clip": 0.5,
-    "save_freq": 5
+    "save_freq": 5,
+    "debug_mode": true
 }

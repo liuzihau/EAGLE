@@ -1,3 +1,4 @@
+import gc
 import os
 import json
 import numpy as np
@@ -210,7 +211,7 @@ class DataCollatorWithPadding:
         return batch
 
 
-CONFIG_PATH = './train_config_1.json'
+CONFIG_PATH = '/content/EAGLE/eagle/train/train_config_1.json'
 with open(CONFIG_PATH, 'r') as f:
     train_config = json.loads(f.read())
 
@@ -314,7 +315,7 @@ for epoch in range(num_epochs + 1):
                 target_p = nn.Softmax(dim=2)(target_head)
                 target_p = target_p.detach()
             loss_mask = data["loss_mask"][:, :, None]
-            vloss, ploss, out_head = compute_loss(target, target_p, predict, criterion, loss_mask)
+            vloss, ploss, out_head = compute_loss(data["target"], target_p, predict, criterion, loss_mask)
             loss = train_config["v_w"] * vloss + train_config["p_w"] * ploss
             # loss.backward()
             accelerator.backward(loss)
@@ -344,9 +345,15 @@ for epoch in range(num_epochs + 1):
             # for id,i in enumerate(top_3acc):
             #     wandb.log({f'train/top_{id+1}_acc':topkacc[id].item()/ct})
 
-        del ploss, vloss
+        del ploss, vloss, out_head, target_head, target_p
+        gc.collect()
+        torch.cuda.empty_cache()
         epoch_loss += loss.item()
         num_batches += 1
+
+        if train_config["debug_mode"] and batch_idx % 50 == 0:
+            print(torch.cuda.memory_summary(device='cuda', abbreviated=True), flush=True)
+
 
     correct, total = torch.tensor(correct).cuda(), torch.tensor(total).cuda()
     correct, total = accelerator.gather_for_metrics((correct, total))
@@ -422,4 +429,4 @@ for epoch in range(num_epochs + 1):
             print('Test Epoch [{}/{}], Loss: {:.4f}'.format(epoch + 1, num_epochs, epoch_loss))
             print('Test Accuracy: {:.2f}%'.format(100 * correct / total))
             wandb.log({"test/epochacc": correct / total, "test/epochloss": epoch_loss})
-            accelerator.save_state(output_dir=f"{train_config["cpdir"]}/state_{epoch}")
+            accelerator.save_state(output_dir=f"{train_config['cpdir']}/state_{epoch}")
