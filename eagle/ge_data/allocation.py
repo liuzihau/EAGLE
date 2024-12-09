@@ -3,6 +3,7 @@ import copy
 
 parser = argparse.ArgumentParser(description='sp')
 parser.add_argument('--outdir', type=str, default='0')
+parser.add_argument('--gpus', type=int, default=1)
 args = parser.parse_args()
 
 import os
@@ -13,7 +14,7 @@ e = 68000 - 1
 #e = 68 - 1
 #gpus = [[0],[1],[2],[3],[4],[5],[6],[7]]
 
-gpus=[[0],[1],[2],[3]]
+gpus=[[i] for i in range(args.gpus)]
 num_p = len(gpus)
 outdir = '{}/sharegpt_{}_{}_mufp16'.format(args.outdir,s,e)
 

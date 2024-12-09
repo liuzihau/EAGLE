@@ -514,6 +514,9 @@ class Model(nn.Module):
         for param in self.embed_tokens.parameters():
             param.requires_grad = False
 
+        print(f"Model decoder layers: {config.num_hidden_layers}")
+        print(f"Model hidden state size: {config.hidden_size}")
+
     def init_tree(self):
         self.tree_mask_init = torch.eye(self.top_k, device=self.embed_tokens.weight.device)[None, None]
         self.position_ids = torch.zeros(self.top_k, device=self.embed_tokens.weight.device, dtype=torch.long)
