@@ -437,4 +437,6 @@ for epoch in range(num_epochs + 1):
             wandb.log({"test/epochacc": correct / total, "test/epochloss": epoch_loss})
             if not os.path.exists(train_config['cpdir']):
                 os.mkdir(train_config['cpdir'])
-            accelerator.save_state(output_dir=f"{train_config['cpdir']}/state_{epoch}")
+            if not os.path.exists(f"{train_config['cpdir']}/{train_config["name"]}"):
+                os.mkdir(f"{train_config['cpdir']}/{train_config["name"]}")
+            accelerator.save_state(output_dir=f"{train_config['cpdir']}/{train_config["name"]}/state_{epoch}")
