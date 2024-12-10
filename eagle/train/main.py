@@ -212,6 +212,7 @@ class DataCollatorWithPadding:
 
 
 CONFIG_PATH = '/content/EAGLE/eagle/train/train_config_1.json'
+PROJECT = 'EAGLE'
 with open(CONFIG_PATH, 'r') as f:
     train_config = json.loads(f.read())
 
@@ -222,7 +223,7 @@ accelerator = Accelerator(mixed_precision='bf16',
                           gradient_accumulation_steps=train_config["gradient_accumulation_steps"])
 if accelerator.is_main_process:
     import wandb
-    wandb.init(config=train_config)
+    wandb.init(project=PROJECT, name=train_config["name"], config=train_config)
 
 baseconfig = AutoConfig.from_pretrained(train_config["basepath"])
 head = torch.nn.Linear(baseconfig.hidden_size, baseconfig.vocab_size, bias=False)
@@ -434,4 +435,6 @@ for epoch in range(num_epochs + 1):
             print('Test Epoch [{}/{}], Loss: {:.4f}'.format(epoch + 1, num_epochs, epoch_loss))
             print('Test Accuracy: {:.2f}%'.format(100 * correct / total))
             wandb.log({"test/epochacc": correct / total, "test/epochloss": epoch_loss})
+            if not os.path.exists(train_config['cpdir']):
+                os.mkdir(train_config['cpdir'])
             accelerator.save_state(output_dir=f"{train_config['cpdir']}/state_{epoch}")

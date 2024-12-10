@@ -1,8 +1,9 @@
 {
+    "name": "CFG1",
     "basepath": "/content/drive/MyDrive/LLMs_weight/llama/checkpoints/Llama-2-7b-hf",
     "datapath": "/content/content/drive/MyDrive/EAGLE_data/sharegpt_0_67999_mufp16/0",
     "config_path": "/content/EAGLE/eagle/train/llama_2_chat_7B_config.json",
-    "cpdir": "/content/drive/MyDrive",
+    "cpdir": "/content/drive/MyDrive/EAGLE_weights",
     "lr": 3e-05,
     "bs": 4,
     "gradient_accumulation_steps": 1,
