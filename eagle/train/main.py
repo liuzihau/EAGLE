@@ -368,7 +368,7 @@ for epoch in range(num_epochs + 1):
         print('Train Accuracy: {:.2f}%'.format(100 * correct / total))
         wandb.log({"train/epochacc": correct / total, "train/epochloss": epoch_loss})
 
-    if (epoch + 1) % train_config["save_freq"]:
+    if (epoch + 1) % train_config["save_freq"] == 0:
         top_3acc = [0 for _ in range(3)]
         correct = 0
         total = 0
@@ -379,7 +379,7 @@ for epoch in range(num_epochs + 1):
         k_acc = [[] for i in range(5)]
         for batch_idx, data in enumerate(tqdm(test_loader)):
             with torch.no_grad():
-                if batch_idx < 10:
+                if batch_idx < 5:
                     acces = getkacc(model, data, head, max_length=5)
                     for i in range(len(acces)):
                         k_acc[i].append(acces[i])
@@ -402,6 +402,11 @@ for epoch in range(num_epochs + 1):
                     top_3acc[top_i] += topkacc[top_i]
                 total += ct
                 correct += cc
+
+                del ploss, vloss, out_head, target_head, target_p
+                gc.collect()
+                torch.cuda.empty_cache()
+                
             epoch_loss += loss.item()
             num_batches += 1
 
